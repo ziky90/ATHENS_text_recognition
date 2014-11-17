@@ -1,6 +1,9 @@
 clear all;
 clean all;
 
+input_data_folder = 'trainResized'
+path_to_analyzed_picture = 'toAnalyze/O1.bmp'
+
 % here parametrize the path to the input image database
 A = imread('trainResized/14.Bmp', 'bmp')
 
