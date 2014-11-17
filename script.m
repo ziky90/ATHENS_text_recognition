@@ -1,4 +1,4 @@
-cleear all;
+clear all;
 clean all;
 
 A = imread('/Users/zikesjan/Downloads/trainResized/14.Bmp', 'bmp')
