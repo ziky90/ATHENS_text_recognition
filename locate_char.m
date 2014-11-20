@@ -2,7 +2,7 @@ function box = locate_char (test)
 
 %test = (imread('test7.png'));
 
-edgeMask = edge(rgb2gray(test), 'Canny',0.3);
+edgeMask = edge(rgb2gray(test), 'Canny',0.4);
 edgeMask = bwmorph(edgeMask,'spur');
 
 se = strel('square',3);
@@ -18,14 +18,14 @@ box = reshape(box,[4 length(box)/4])';
 num = length(box);
 
 m=1;
-while m < num
-    if box(m,3) > 0.25*size(test,2) || box(m,4)>0.25*size(test,1) || box(m,3) < 15 || box(m,4) < 15
-        box(m,:) = [];
-        m=m-1;
-    end
-    num = length(box);
-    m=m+1;
-end
+% while m < num
+%     if box(m,3) > 0.25*size(test,2) || box(m,4)>0.25*size(test,1) || box(m,3) < 10 || box(m,4)<10
+%         box(m,:) = [];
+%         m=m-1;
+%     end
+%     num = length(box);
+%     m=m+1;
+% end
 
 figure
 imshow(test);
