@@ -24,9 +24,40 @@ labels = textread('trainResized/trainLabels.csv', '%s', 'delimiter', ',', 'heade
 labels = labels(2 : 2 : end);
 
 % just the unsupervized letter to try out the classifier
-record_matrix = imread('trainResized/34.Bmp');
-record_grey = charactExtractor(rgb2gray(record_matrix));
-predict_knn(double(features), labels, 100, double(record_grey)) % 5 is just a random guess
+
+%record_matrix = imread('trainResized/34.Bmp');
+%record_grey = charactExtractor(rgb2gray(record_matrix));
+streetview_photo = imread('testData/test5.png', 'png');
+boxes = locate_char(streetview_photo);
+
+%grey_street = rgb2gray(streetview_photo);
+
+for i = 1:size(boxes,1)
+   actual_box = boxes(i,:);
+   % in case when width is smaller then height we assume that we have just
+   % one letter found
+   if actual_box(1,3) <= actual_box(1,4)
+       % doing the cut from the whole photo
+       cut = streetview_photo(actual_box(1,2):actual_box(1,2)+actual_box(1,4), actual_box(1,1):actual_box(1,1)+actual_box(1,3), :);
+       % converting the letter to the grey scale
+       grey_cut = rgb2gray(cut);
+       % resizing the image to 20px by 20px
+       resized_image = imresize(grey_cut, [20, 20]);
+       % creating the record vector from the resized image
+       cut_vector = charactExtractor(resized_image);
+       % predicting the letter
+       [char, proba] = predict_knn(double(features), labels, 100, double(cut_vector));
+       if proba > 15
+           char
+           proba
+           figure
+           imshow(resized_image);
+       end
+   % TODO put here else for wide rectangles
+   end
+end
+
+%predict_knn(double(features), labels, 100, double(record_grey)) % 100 is just a random guess
 
 % build theclassifier !!!
 
