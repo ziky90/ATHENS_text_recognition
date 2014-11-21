@@ -30,13 +30,17 @@ labels = labels(2 : 2 : end);
 %record_matrix = imread('trainResized/34.Bmp');
 %record_grey = charactExtractor(rgb2gray(record_matrix));
 %streetview_photo = imread('testData/test.png', 'png');
-%streetview_photo = imread('testData/test4.png', 'png');
-%streetview_photo = imread('testData/test6.png', 'png');
-streetview_photo = imread('testData/test10.png', 'png');
+streetview_photo = imread('testData/test4.png', 'png');
+streetview_photo = imread('testData/test6.png', 'png');
+%streetview_photo = imread('testData/test10.png', 'png');
+%streetview_photo = imread('Soufflot-23.tiff', 'tiff');
+%streetview_photo = imread('Soufflot-17-2.tiff', 'tiff');
+%streetview_photo = imread('Soufflot-17.tiff', 'tiff');
+streetview_photo = streetview_photo(:,:,1:3);
 boxes = locate_char(streetview_photo);
 
 %grey_street = rgb2gray(streetview_photo);
-
+good_boxes = [];
 for i = 1:size(boxes,1)
    actual_box = boxes(i,:);
    % in case when width is smaller then height we assume that we have just
@@ -53,29 +57,43 @@ for i = 1:size(boxes,1)
        cut_vector = charactExtractor2(resized_image);
        % predicting the letter
        [pred, proba] = predict_knn(double(features), labels, 100, double(cut_vector));
-       if proba > 13
+       if proba > 10
+           if isempty(good_boxes)
+               good_boxes = actual_box;
+           else
+               good_boxes = [good_boxes; actual_box];
+           end
            pred
            proba
            figure
            imshow(resized_image);
        end
-   else
-       for j=1:floor(actual_box(1,3)/(actual_box(1,4)))
-           cut = streetview_photo(actual_box(1,2):actual_box(1,2)+actual_box(1,4)-1, (j-1)*actual_box(1,4)/2+actual_box(1,1):(j-1)*actual_box(1,4)+actual_box(1,1)+actual_box(1,4)-1, :);
-           % converting the letter to the grey scale
-           grey_cut = rgb2gray(cut);
-           % resizing the image to 20px by 20px
-           resized_image = imresize(grey_cut, [20, 20]);
-           % creating the record vector from the resized image
-           cut_vector = charactExtractor2(resized_image);
-           % predicting the letter
-           [pred, proba] = predict_knn(double(features), labels, 100, double(cut_vector));
-           if proba > 13
-               pred
-               proba
-               figure
-               imshow(resized_image);
-           end
-      end
+%    else
+%        for j=1:floor(actual_box(1,3)/(actual_box(1,4)))
+%            cut = streetview_photo(actual_box(1,2):actual_box(1,2)+actual_box(1,4)-1, (j-1)*actual_box(1,4)/2+actual_box(1,1):(j-1)*actual_box(1,4)+actual_box(1,1)+actual_box(1,4)-1, :);
+%            % converting the letter to the grey scale
+%            grey_cut = rgb2gray(cut);
+%            % resizing the image to 20px by 20px
+%            resized_image = imresize(grey_cut, [20, 20]);
+%            % creating the record vector from the resized image
+%            %cut_vector = charactExtractor(resized_image);
+%            cut_vector = charactExtractor2(resized_image);
+%            % predicting the letter
+%            [pred, proba] = predict_knn(double(features), labels, 100, double(cut_vector));
+%            if proba > 10
+%                pred
+%                proba
+%                figure
+%                imshow(resized_image);
+%            end
+%       end
    end
 end
+
+figure
+imshow(streetview_photo);
+hold on;
+for cnt = 1:size(good_boxes,1)
+    rectangle('position',good_boxes(cnt,:),'edgecolor','g');
+end
+hold off
